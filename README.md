@@ -23,6 +23,7 @@ systems.
 ### Included
 
 - Data-types and traits for encoding and decoding ACN protocols.
+- `no_std` compatible.
 
 ### Not included
 

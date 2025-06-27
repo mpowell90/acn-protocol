@@ -1,5 +1,5 @@
 use crate::error::AcnError;
-use std::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign};
+use core::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign};
 
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 pub struct Flags(u8);
