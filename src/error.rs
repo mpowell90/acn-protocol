@@ -8,7 +8,6 @@ pub enum AcnError {
     InvalidVector(Vector),
     InvalidPreamble,
     InvalidPostamble,
-    InvalidData(String),
     TryFromSliceError(TryFromSliceError),
 }
 
@@ -21,12 +20,11 @@ impl From<TryFromSliceError> for AcnError {
 impl fmt::Display for AcnError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Self::InvalidBufferLength(length) => write!(f, "Invalid Buffer Length: {}", length),
-            Self::InvalidVector(vector) => write!(f, "Invalid Vector: {:?}", vector),
+            Self::InvalidBufferLength(length) => write!(f, "Invalid Buffer Length: {length}"),
+            Self::InvalidVector(vector) => write!(f, "Invalid Vector: {vector:?}"),
             Self::InvalidPreamble => write!(f, "Invalid Preamble"),
             Self::InvalidPostamble => write!(f, "Invalid Postamble"),
-            Self::InvalidData(data) => write!(f, "Invalid Data: {}", data),
-            Self::TryFromSliceError(err) => write!(f, "TryFromSliceError: {}", err),
+            Self::TryFromSliceError(err) => write!(f, "TryFromSliceError: {err}"),
         }
     }
 }
