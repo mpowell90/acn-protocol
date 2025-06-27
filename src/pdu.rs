@@ -60,6 +60,10 @@ pub trait PduCodec {
     }
 
     fn encode(&self, buf: &mut [u8]) -> Result<usize, AcnError> {
+        // It's possible the buffer is not zeroed out and it is being overwritten
+        // flags and length OR the first byte so we must zero it first
+        buf[0] = 0;
+        
         self.flags().encode(buf)?;
 
         let mut offset = self.length().encode(buf)?;
