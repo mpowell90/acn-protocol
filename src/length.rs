@@ -100,7 +100,7 @@ impl Length {
                 lower: u16::from_be_bytes([buf[1], buf[2]]),
             }
         } else {
-            Length::Standard(u16::from_be_bytes([buf[0], buf[1]]))
+            Length::Standard(u16::from_be_bytes([buf[0] & 0xf, buf[1]]))
         };
 
         Ok(length)
