@@ -1,8 +1,8 @@
 use crate::{error::AcnError, flags::Flags, length::Length, vector::Vector};
-use core::fmt;
+use core::error::Error;
 
 pub trait PduCodec {
-    type Error: fmt::Debug + core::error::Error;
+    type Error: Error + From<AcnError>;
 
     fn flags(&self) -> Flags {
         let mut flags = Flags::default();
@@ -47,7 +47,7 @@ pub trait PduCodec {
         0
     }
 
-    fn encode_header(&self, _buf: &mut [u8]) -> Result<usize, AcnError> {
+    fn encode_header(&self, _buf: &mut [u8]) -> Result<usize, Self::Error> {
         Ok(0)
     }
 
@@ -55,15 +55,15 @@ pub trait PduCodec {
         0
     }
 
-    fn encode_data(&self, _buf: &mut [u8]) -> Result<usize, AcnError> {
+    fn encode_data(&self, _buf: &mut [u8]) -> Result<usize, Self::Error> {
         Ok(0)
     }
 
-    fn encode(&self, buf: &mut [u8]) -> Result<usize, AcnError> {
+    fn encode(&self, buf: &mut [u8]) -> Result<usize, Self::Error> {
         // It's possible the buffer is not zeroed out and it is being overwritten
         // flags and length OR the first byte so we must zero it first
         buf[0] = 0;
-        
+
         self.flags().encode(buf)?;
 
         let mut offset = self.length().encode(buf)?;

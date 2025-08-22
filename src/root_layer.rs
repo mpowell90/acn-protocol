@@ -1,7 +1,8 @@
-use crate::error::AcnError;
+use crate::AcnError;
+use core::error::Error;
 
 pub trait RootLayerCodec {
-    type Error;
+    type Error: Error + From<AcnError>;
 
     fn size(&self) -> usize {
         self.preamble_length() + self.pdu_block_length() + self.postamble_length()
@@ -11,7 +12,7 @@ pub trait RootLayerCodec {
         0
     }
 
-    fn encode_preamble(&self, _buf: &mut [u8]) -> Result<usize, AcnError> {
+    fn encode_preamble(&self, _buf: &mut [u8]) -> Result<usize, Self::Error> {
         Ok(self.preamble_length())
     }
 
@@ -19,7 +20,7 @@ pub trait RootLayerCodec {
         0
     }
 
-    fn encode_pdu_block(&self, _buf: &mut [u8]) -> Result<usize, AcnError> {
+    fn encode_pdu_block(&self, _buf: &mut [u8]) -> Result<usize, Self::Error> {
         Ok(self.pdu_block_length())
     }
 
@@ -27,15 +28,13 @@ pub trait RootLayerCodec {
         0
     }
 
-    fn encode_postamble(&self, _buf: &mut [u8]) -> Result<usize, AcnError> {
+    fn encode_postamble(&self, _buf: &mut [u8]) -> Result<usize, Self::Error> {
         Ok(self.postamble_length())
     }
 
-    fn encode(&self, buf: &mut [u8]) -> Result<usize, AcnError> {
-        let size = self.size();
-
-        if buf.len() < size {
-            return Err(AcnError::InvalidBufferLength(buf.len()));
+    fn encode(&self, buf: &mut [u8]) -> Result<usize, Self::Error> {
+        if buf.len() < self.size() {
+            return Err(AcnError::InvalidBufferLength(buf.len()).into());
         }
 
         let mut offset = 0;
