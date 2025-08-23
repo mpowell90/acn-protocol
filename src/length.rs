@@ -62,7 +62,10 @@ impl Length {
         let size = self.size();
 
         if buf.len() < size {
-            return Err(AcnError::InvalidBufferLength(buf.len()));
+            return Err(AcnError::InvalidBufferLength {
+                actual: buf.len(),
+                expected: size,
+            });
         }
 
         match self {
@@ -85,14 +88,20 @@ impl Length {
 
     pub fn decode(buf: &[u8]) -> Result<Self, AcnError> {
         if buf.len() < 2 {
-            return Err(AcnError::InvalidBufferLength(buf.len()));
+            return Err(AcnError::InvalidBufferLength {
+                actual: buf.len(),
+                expected: 2,
+            });
         }
 
         let flags = Flags::decode(buf)?;
 
         let length = if flags.is_extended_length() {
             if buf.len() < 3 {
-                return Err(AcnError::InvalidBufferLength(buf.len()));
+                return Err(AcnError::InvalidBufferLength {
+                    actual: buf.len(),
+                    expected: 3,
+                });
             }
 
             Length::Extended {

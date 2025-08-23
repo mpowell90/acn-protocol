@@ -33,8 +33,14 @@ pub trait RootLayerCodec {
     }
 
     fn encode(&self, buf: &mut [u8]) -> Result<usize, Self::Error> {
-        if buf.len() < self.size() {
-            return Err(AcnError::InvalidBufferLength(buf.len()).into());
+        let buffer_len = buf.len();
+        let expected_len = self.size();
+
+        if buffer_len < expected_len {
+            return Err(AcnError::InvalidBufferLength {
+                actual: buffer_len,
+                expected: expected_len,
+            }.into());
         }
 
         let mut offset = 0;
@@ -108,7 +114,10 @@ mod tests {
 
         fn decode(buf: &[u8]) -> Result<Self, Self::Error> {
             if buf.len() < 4 {
-                return Err(AcnError::InvalidBufferLength(buf.len()));
+                return Err(AcnError::InvalidBufferLength {
+                    actual: buf.len(),
+                    expected: 4,
+                });
             }
 
             if buf[0..4] != [0x01, 0x02, 0x03, 0x04] {

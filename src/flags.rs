@@ -63,7 +63,10 @@ impl Flags {
 
     pub fn encode(&self, buf: &mut [u8]) -> Result<usize, AcnError> {
         if buf.is_empty() {
-            return Err(AcnError::InvalidBufferLength(buf.len()));
+            return Err(AcnError::InvalidBufferLength {
+                actual: 0,
+                expected: 1,
+            });
         }
 
         buf[0] |= self.bits();
@@ -73,7 +76,10 @@ impl Flags {
 
     pub fn decode(buf: &[u8]) -> Result<Self, AcnError> {
         if buf.is_empty() {
-            return Err(AcnError::InvalidBufferLength(0));
+            return Err(AcnError::InvalidBufferLength {
+                actual: 0,
+                expected: 1,
+            });
         }
 
         Ok(Self::new(buf[0]))

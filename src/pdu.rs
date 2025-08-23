@@ -123,8 +123,14 @@ mod tests {
         fn decode(buf: &[u8]) -> Result<Self, Self::Error> {
             let length = Length::decode(buf)?;
 
-            if (buf.len() as u32) < length.as_u32() {
-                return Err(AcnError::InvalidBufferLength(buf.len()));
+            let buffer_len = buf.len();
+            let expected_len = length.as_usize();
+
+            if buffer_len < expected_len {
+                return Err(AcnError::InvalidBufferLength {
+                    actual: buffer_len,
+                    expected: expected_len,
+                });
             }
 
             let vector = buf[3];
