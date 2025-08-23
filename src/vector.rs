@@ -20,7 +20,10 @@ impl Vector {
         let size = self.size();
 
         if buf.len() < size {
-            return Err(AcnError::InvalidBufferLength(buf.len()));
+            return Err(AcnError::InvalidBufferLength {
+                actual: buf.len(),
+                expected: size,
+            });
         }
 
         match self {
